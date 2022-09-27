@@ -11,6 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/goals", require("./routes/goalRoutes")); // collection of apis
+app.use("/api/users", require("./routes/userRoutes")); // collection of apis
 
 // gives more information
 app.use(errorHandler);
