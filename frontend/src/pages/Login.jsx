@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { FaSignInAlt } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-// import { toast } from "react-toastify";
-import { FaSignInAlt } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { login, reset } from "../features/auth/authSlice";
+import Spinner from "../components/Spinner";
 
-function Register() {
+function Login() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -12,28 +14,46 @@ function Register() {
 
   const { email, password } = formData;
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+
+    if (isSuccess || user) {
+      navigate("/");
+    }
+
+    dispatch(reset());
+  }, [user, isError, isSuccess, message, navigate, dispatch]);
+
   const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
-      [e.target.name]: e.target.value, // name is key, not id, value in inputted
+      [e.target.name]: e.target.value,
     }));
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    console.log(`${formData.name}`);
 
-    // if (password !== password2) {
-    //   toast.error("Passwords do not match");
-    // } else {
-    //   const userData = {
-    //     name,
-    //     email,
-    //     password,
-    //   };
+    const userData = {
+      email,
+      password,
+    };
 
-    //   dispatch(register(userData));
+    dispatch(login(userData));
   };
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <>
@@ -41,7 +61,7 @@ function Register() {
         <h1>
           <FaSignInAlt /> Login
         </h1>
-        <p>Please create an account</p>
+        <p>Login and start setting goals</p>
       </section>
 
       <section className="form">
@@ -68,6 +88,7 @@ function Register() {
               onChange={onChange}
             />
           </div>
+
           <div className="form-group">
             <button type="submit" className="btn btn-block">
               Submit
@@ -79,4 +100,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default Login;
